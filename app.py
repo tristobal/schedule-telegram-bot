@@ -1,6 +1,5 @@
-from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
-from util.constants import TOKEN, URL, ON_HEROKU
+from util.constants import TOKEN, URL
 from scraper.schedule import search_schedule, now
 import json
 import requests
@@ -53,9 +52,5 @@ def webhook():
     return Response(res.json()['description'], status=res.status_code)
 
 
-# def job():
-#     print(f"{now()} Hola mundo")
-
-
 if __name__ == '__main__':
-    app.run(threaded=True)
+    app.run(port=8080, threaded=True)
