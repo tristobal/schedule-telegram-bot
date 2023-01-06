@@ -49,7 +49,8 @@ def index():
 
 
 @app.route('/scrap', methods=['GET'])
-def test_web_scraper():
+def web_scraper():
+    print(f'${now()} web_scraper')
     try:
         response = search_schedule()
     except Exception as e:
@@ -66,4 +67,4 @@ def webhook():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
-    app.run(port=port, host='0.0.0.0', threaded=True)
+    app.run(port=port, host='0.0.0.0', debug=True)
