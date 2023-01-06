@@ -1,9 +1,9 @@
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
-from telebot.credentials import TOKEN, URL
+from util.constants import TOKEN, URL
 from scraper.schedule import search_schedule, now
 import json
 import requests
-import schedule
 
 app = Flask(__name__)
 
@@ -31,46 +31,31 @@ def send_message(chat_id, text):
 def index():
     if request.method == 'POST':
         msg = request.get_json()
-        chat_id, txt = parse_message(msg)
-        if txt.lower() == 'buscar':
-            send_message(chat_id, f'Ok, voy a buscar la disponibilidad')
-            send_message(chat_id, f'{search_schedule()}')
-        elif txt == 'programar':
-            tel_send_poll(chat_id)
-        else:
-            send_message(chat_id, f'Tú me dices "{txt}", yo te digo lo mismo en mayúsculas: {txt.upper()}')
+        try:
+            chat_id, txt = parse_message(msg)
+            if txt.lower() == 'buscar':
+                send_message(chat_id, f'Ok, voy a buscar la disponibilidad')
+                send_message(chat_id, f'{search_schedule()}')
+            else:
+                send_message(chat_id, f'Tú me dices "{txt}", yo te digo lo mismo en mayúsculas: {txt.upper()}')
+        except KeyError as e:
+            print(f'{now} Error parsing message from Telegram: {e}')
+            print(f'{now} {e}')
         return Response('ok', status=200)
     else:
         return "Nothing to see here"
 
 
-def job():
-    print(f"{now()} Hola mundo")
+@app.route('/webhook', methods=['GET'])
+def webhook():
+    res = requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={URL}")
+    print(f'{now} {res.text}')
+    return Response(res.json()['description'], status=res.status_code)
 
 
-def tel_send_poll(chat_id):
-    url = f'https://api.telegram.org/bot{TOKEN}/sendPoll'
-    payload = {
-        'chat_id': chat_id,
-        "question": "¿En qué centro asistencial quiere agendar?",
-        "options": json.dumps(["Integramédica", "Redsalud", "Avansalud", "Hospital de Quillota"]),
-        "is_anonymous": False,
-        "type": "quiz",
-        "correct_option_id": 2
-    }
+# def job():
+#     print(f"{now()} Hola mundo")
 
-    r = requests.post(url, json=payload)
-
-    return r
 
 if __name__ == '__main__':
-    try:
-        response = requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={URL}")
-        if response.status_code == 200:
-            print(f"response: {response.json()}")
-            schedule.every(1).minutes.do(job)
-            app.run(debug=True)
-        else:
-            raise RuntimeError(f"{response.status_code} ")
-    except (requests.exceptions.RequestException, RuntimeError) as e:
-        raise SystemExit(e)
+    app.run(debug=True)
