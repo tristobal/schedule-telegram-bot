@@ -48,6 +48,15 @@ def index():
         return "Nothing to see here"
 
 
+@app.route('/scrap', methods=['GET'])
+def test_web_scraper():
+    try:
+        response = search_schedule()
+    except Exception as e:
+        response = e
+    return Response(response, status=200)
+
+
 @app.route('/webhook', methods=['GET'])
 def webhook():
     res = requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={URL}")

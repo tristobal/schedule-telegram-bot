@@ -23,6 +23,8 @@ COPY scraper/schedule.py /app/scraper/schedule.py
 COPY util/__init__.py /app/util/__init__.py
 COPY util/constants.py  /app/util/constants.py
 COPY requirements.txt .
+# TODO Needs to be improved
+COPY /usr/local/bin/chromedriver /app/chromedriver
 
 RUN pip install -r requirements.txt
 
