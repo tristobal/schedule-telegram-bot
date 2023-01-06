@@ -39,7 +39,10 @@ def index():
                 send_message(chat_id, f'Ok, voy a buscar la disponibilidad')
                 send_message(chat_id, f'{search_schedule()}')
             else:
-                send_message(chat_id, f'Tú me dices "{txt}", yo te digo lo mismo en mayúsculas: {txt.upper()}')
+                msg = """Por ahora no tengo implementada ninguna funcionalidad.
+                Para buscar la agenda de la dermatóloga, escribe "buscar"
+                """
+                send_message(chat_id, msg)
         except KeyError as e:
             print(f'{now} Error parsing message from Telegram: {e}')
             print(f'{now} {e}')
@@ -67,4 +70,4 @@ def webhook():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
-    app.run(port=port, host='0.0.0.0', debug=True)
+    app.run(port=port, host='0.0.0.0', threaded=True)
