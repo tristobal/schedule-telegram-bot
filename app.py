@@ -1,8 +1,11 @@
-from flask import Flask, request, Response
-from util.constants import TOKEN, URL
-from scraper.schedule import search_schedule, now
 import json
+import os
+
 import requests
+from flask import Flask, request, Response
+
+from scraper.schedule import search_schedule, now
+from util.constants import TOKEN, URL
 
 app = Flask(__name__)
 
@@ -53,4 +56,5 @@ def webhook():
 
 
 if __name__ == '__main__':
-    app.run(port=8080, threaded=True)
+    port = int(os.environ.get('PORT', 8080))
+    app.run(port=port, host='0.0.0.0', threaded=True)
