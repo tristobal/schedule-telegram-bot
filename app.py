@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request, Response
-from util.constants import TOKEN, URL
+from util.constants import TOKEN, URL, ON_HEROKU
 from scraper.schedule import search_schedule, now
 import json
 import requests

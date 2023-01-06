@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from util.constants import ON_HEROKU
 
 AREA_COMBOBOX_ID = 'xxx'
 AREA_DERMATOLOGY_ID = '5'
@@ -20,15 +21,26 @@ def now():
     return dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
+def get_driver():
+    if ON_HEROKU:
+        chrome_options = Options()
+        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        chrome_options.headless = True
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--no-sandbox")
+        return webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
+    else:
+        chromedriver_path = os.path.abspath('../chromedriver')
+        chrome_service = Service(chromedriver_path)
+        chrome_options = Options()
+        chrome_options.headless = True
+        return webdriver.Chrome(service=chrome_service, options=chrome_options)
+
+
 def search_schedule():
     response = ""
-    chromedriver_path = os.path.abspath('../chromedriver')
-    chromedriver_service = Service(chromedriver_path)
-    chromedriver_options = Options()
-    chromedriver_options.headless = True
-
+    driver = get_driver()
     print(f'{now()} Visiting: {URL}')
-    driver = webdriver.Chrome(service=chromedriver_service, options=chromedriver_options)
     driver.get(URL)
 
     print(f'{now()} {driver.title}')
