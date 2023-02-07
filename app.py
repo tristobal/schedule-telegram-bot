@@ -1,32 +1,12 @@
-import json
 import os
 
 import requests
 from flask import Flask, request, Response
 
 from scraper.schedule import search_schedule, now
-from util.constants import TOKEN, URL
+from telegram.handler import send_message, parse_message, WEBHOOK_URL
 
 app = Flask(__name__)
-
-
-def parse_message(message):
-    print(json.dumps(message, indent=2, sort_keys=True))
-    chat_id = message['message']['chat']['id']
-    txt = message['message']['text']
-    print(f"chat_id: {chat_id}")
-    print(f"txt: {txt}")
-    return chat_id, txt
-
-
-def send_message(chat_id, text):
-    url = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
-    payload = {
-        'chat_id': chat_id,
-        'text': text
-    }
-    req = requests.post(url, json=payload)
-    return req
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -56,6 +36,7 @@ def web_scraper():
     print(f'${now()} web_scraper')
     try:
         response = search_schedule()
+        print(f'${now()} {response}')
     except Exception as e:
         response = e
     return Response(response, status=200)
@@ -63,7 +44,7 @@ def web_scraper():
 
 @app.route('/webhook', methods=['GET'])
 def webhook():
-    res = requests.get(f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={URL}")
+    res = requests.get(WEBHOOK_URL)
     print(f'{now} {res.text}')
     return Response(res.json()['description'], status=res.status_code)
 
