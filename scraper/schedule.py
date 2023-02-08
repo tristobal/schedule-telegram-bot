@@ -33,7 +33,8 @@ def get_driver():
     if ON_RENDER:
         return webdriver.Chrome(options=chrome_options)
     else:
-        chromedriver_path = os.path.abspath('../chromedriver')
+        chromedriver_path = os.path.abspath('chromedriver')
+        print(f'chromedriver_path: {chromedriver_path}')
         chrome_service = Service(chromedriver_path)
         return webdriver.Chrome(service=chrome_service, options=chrome_options)
 
