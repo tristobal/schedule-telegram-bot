@@ -18,9 +18,9 @@ ENV DISPLAY=:99
 RUN pip install --upgrade pip
 
 COPY app.py /app/app.py
-COPY scraper/schedule.py /app/scraper/schedule.py
-COPY util/__init__.py /app/util/__init__.py
-COPY util/constants.py  /app/util/constants.py
+COPY scraper/ /app/scraper/
+COPY util/ /app/util/
+COPY telegram/ /app/telegram/
 COPY requirements.txt .
 
 RUN pip install -r requirements.txt
