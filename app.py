@@ -3,7 +3,7 @@ import os
 import requests
 from flask import Flask, request, Response
 
-from scraper.schedule import search_schedule, now
+from scraper.schedule import search_dermatologist_schedule, search_rheumatologist_schedule, now
 from telegram.handler import send_message, parse_message, WEBHOOK_URL
 
 app = Flask(__name__)
@@ -17,11 +17,13 @@ def index():
             chat_id, txt = parse_message(msg)
             if txt.lower() == 'buscar':
                 send_message(chat_id, f'Ok, voy a buscar la disponibilidad')
-                send_message(chat_id, f'{search_schedule()}')
+                send_message(chat_id, f'{search_dermatologist_schedule()}')
+            elif txt.lower() == 'reuma':
+                send_message(chat_id, f'Ok, voy a buscar la disponibilidad de algún reumatólogo')
+                send_message(chat_id, f'{search_rheumatologist_schedule()}')
             else:
-                msg = """Por ahora no tengo implementada ninguna funcionalidad.
-                Para buscar la agenda de la dermatóloga, escribe "buscar"
-                """
+                msg = "Para buscar la agenda de la dermatóloga, escribe \"buscar\".\n" \
+                      "Para buscar cualquier reumatólogo, escribe \"reuma\"."
                 send_message(chat_id, msg)
         except KeyError as e:
             print(f'{now} Error parsing message from Telegram: {e}')
@@ -35,7 +37,18 @@ def index():
 def web_scraper():
     print(f'${now()} web_scraper')
     try:
-        response = search_schedule()
+        response = search_dermatologist_schedule()
+        print(f'${now()} {response}')
+    except Exception as e:
+        response = e
+    return Response(response, status=200)
+
+
+@app.route('/scrap2', methods=['GET'])
+def web_scraper2():
+    print(f'${now()} web_scraper2')
+    try:
+        response = search_rheumatologist_schedule()
         print(f'${now()} {response}')
     except Exception as e:
         response = e
