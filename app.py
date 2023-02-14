@@ -15,10 +15,10 @@ def index():
         msg = request.get_json()
         try:
             chat_id, txt = parse_message(msg)
-            if txt.lower() == 'buscar':
+            if txt.lower() == 'buscar' or txt.lower() == '/dermatologa':
                 send_message(chat_id, f'Ok, voy a buscar la disponibilidad')
                 send_message(chat_id, f'{search_dermatologist_schedule()}')
-            elif txt.lower() == 'reuma':
+            elif txt.lower() == 'reuma' or txt.lower() == '/reumatologos':
                 send_message(chat_id, f'Ok, voy a buscar la disponibilidad de algún reumatólogo')
                 send_message(chat_id, f'{search_rheumatologist_schedule()}')
             else:
